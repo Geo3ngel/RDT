@@ -69,13 +69,13 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/RDT_2_1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="144" selection-start-line="144" selection-end-line="144" />
+            <state relative-caret-position="352">
+              <caret line="148" column="55" lean-forward="true" selection-start-line="148" selection-start-column="55" selection-end-line="148" selection-end-column="55" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
-                <marker date="1539459620241" expanded="true" signature="3692:4833" ph="..." />
-                <marker date="1539459620241" expanded="true" signature="4887:4896" ph="..." />
-                <marker date="1539459620241" expanded="true" signature="6642:6651" ph="..." />
+                <marker date="1539459751838" expanded="true" signature="3692:4833" ph="..." />
+                <marker date="1539459751838" expanded="true" signature="4887:4896" ph="..." />
+                <marker date="1539459751838" expanded="true" signature="6632:6641" ph="..." />
               </folding>
             </state>
           </provider>
@@ -180,7 +180,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2553305" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -293,13 +292,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/RDT_2_1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="144" selection-start-line="144" selection-end-line="144" />
+        <state relative-caret-position="352">
+          <caret line="148" column="55" lean-forward="true" selection-start-line="148" selection-start-column="55" selection-end-line="148" selection-end-column="55" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
-            <marker date="1539459620241" expanded="true" signature="3692:4833" ph="..." />
-            <marker date="1539459620241" expanded="true" signature="4887:4896" ph="..." />
-            <marker date="1539459620241" expanded="true" signature="6642:6651" ph="..." />
+            <marker date="1539459751838" expanded="true" signature="3692:4833" ph="..." />
+            <marker date="1539459751838" expanded="true" signature="4887:4896" ph="..." />
+            <marker date="1539459751838" expanded="true" signature="6632:6641" ph="..." />
           </folding>
         </state>
       </provider>

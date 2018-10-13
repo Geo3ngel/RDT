@@ -115,7 +115,7 @@ class RDT:
             # if this was the last packet, will return on the next iteration
 
     def rdt_2_1_receive(self):
-        self.seq_num = None
+        self.seq_num = 0
         ret_S = None
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
