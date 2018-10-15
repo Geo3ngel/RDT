@@ -54,7 +54,7 @@ class Packet:
 
 class RDT:
     # latest sequence number used in a packet
-    seq_num = 1
+    seq_num = 0
     # buffer of bytes read from network
     byte_buffer = '' 
 
@@ -91,8 +91,9 @@ class RDT:
 
     def rdt_2_1_send(self, msg_S):
         p = Packet(self.seq_num, msg_S)
+        print(self.seq_num)
         self.network.udt_send(p.get_byte_S())
-
+        self.seq_num += 1
         byte_S = self.network.udt_receive()
         ret_S = None
         self.byte_buffer += byte_S
@@ -111,6 +112,8 @@ class RDT:
                 p = Packet(self.seq_num, msg_S)
                 self.network.udt_send(p.get_byte_S())
                 self.lastMessageSent = msg_S
+            else:
+                return ret_S
 
             self.byte_buffer = self.byte_buffer[length:]  # remove the packet bytes from the buffer
             # if this was the last packet, will return on the next iteration
@@ -119,12 +122,12 @@ class RDT:
     lastMessageSent = ""
 
     def rdt_2_1_receive(self):
-        self.seq_num = 0
         ret_S = None
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
         # keep extracting packets - if reordered, could get more than one
         while True:
+            print(self.seq_num)
             # check if we have received enough bytes
             if (len(self.byte_buffer) < Packet.length_S_length):
                 return ret_S  # not enough bytes to read packet length
@@ -152,7 +155,7 @@ class RDT:
                 if self.seq_num != p.seq_num:
                     self.seq_num = p.seq_num
                     response = Packet(self.seq_num, 'ACK')
-                    #print("Why ack?")
+                    print("Why ack?")
                     self.network.udt_send(response.get_byte_S())
                     #Apply bandaid here
                     #ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
@@ -160,8 +163,7 @@ class RDT:
                     #print("return string !!" + ret_S)
                 elif self.seq_num == p.seq_num:
                     #print("Are equal, send ack?")
-                    seq_num = 0 if (self.seq_num is None) else self.seq_num
-                    response = Packet(seq_num, 'ACK')
+                    response = Packet(self.seq_num, 'ACK')
                     # Apply bandaid here
                     if(response.msg_S == 'ACK'):
                         self.network.udt_send(response.get_byte_S())

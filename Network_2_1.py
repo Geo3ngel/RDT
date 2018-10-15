@@ -11,7 +11,7 @@ import RDT_2_1
 class NetworkLayer:
     #configuration parameters
     prob_pkt_loss = 0
-    prob_byte_corr = 0.2
+    prob_byte_corr = 0
     prob_pkt_reorder = 0
     
     #class variables
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     network = NetworkLayer(args.role, args.server, args.port)
     if args.role == 'client':
         network.udt_send('MSG_FROM_CLIENT')
-        sleep(1000)
+        sleep(10000)
         print(network.udt_receive())
         network.disconnect()
         
