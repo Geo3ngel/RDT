@@ -91,9 +91,9 @@ class RDT:
 
     def rdt_2_1_send(self, msg_S):
         # create a packet, then send it to a receiver
+        print('sending: ' + msg_S)
         packet = Packet(self.seq_num, msg_S)
         self.seq_num += 1
-        print('sending: ' + packet.msg_S)
         self.network.udt_send(packet.get_byte_S())
 
         # receive a response as an ACK or NAK
@@ -117,7 +117,6 @@ class RDT:
                 self.network.udt_send(packet.get_byte_S())
 
             self.byte_buffer = self.byte_buffer[length:]
-            sleep(20)
             # loop will stop after ACK is confirmed
 
     def rdt_2_1_receive(self):
@@ -148,7 +147,6 @@ class RDT:
                     response = Packet(self.seq_num, 'ACK')
                     self.network.udt_send(response.get_byte_S())
                     if (recv_pkt.msg_S is not 'ACK') and (recv_pkt.msg_S is not 'NAK'):
-                        print('adding ' + recv_pkt.msg_S)
                         ret_S = recv_pkt.msg_S if (ret_S is None) else ret_S + recv_pkt.msg_S
 
                 elif self.seq_num == recv_pkt.seq_num:  # successful reception of new packet
