@@ -113,7 +113,7 @@ if __name__ == '__main__':
     rdt = RDT(args.role, args.server, args.port)
     if args.role == 'client':
         rdt.rdt_1_0_send('MSG_FROM_CLIENT')
-        sleep(2)
+        sleep(6)
         print(rdt.rdt_1_0_receive())
         rdt.disconnect()
         
