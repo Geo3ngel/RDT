@@ -18,7 +18,7 @@ class Packet:
     @classmethod
     def from_byte_S(self, byte_S):
         if Packet.corrupt(byte_S):
-            raise RuntimeError('Cannot initialize Packet: byte_S is corrupt')
+            return self(0, 'CORRUPT')
         #extract the fields
         seq_num = int(byte_S[Packet.length_S_length : Packet.length_S_length+Packet.seq_num_S_length])
         msg_S = byte_S[Packet.length_S_length+Packet.seq_num_S_length+Packet.checksum_length :]
@@ -92,7 +92,8 @@ class RDT:
     def rdt_2_1_send(self, msg_S):
         # create a packet, then send it to a receiver
         packet = Packet(self.seq_num, msg_S)
-        self.seq_num = 1 if (self.seq_num == 0) else 0
+        self.seq_num += 1
+        print('sending: ' + packet.msg_S)
         self.network.udt_send(packet.get_byte_S())
 
         # receive a response as an ACK or NAK
@@ -108,26 +109,20 @@ class RDT:
             if len(self.byte_buffer) < length:
                 break
 
+            recv_pkt = Packet.from_byte_S(self.byte_buffer[0:length])
+
             # determine if the response is corrupt or NAK
-            if Packet.corrupt(byte_S):  # resend the packet if response is corrupt
-                print('CORRUPT RESPONSE')
+            if recv_pkt.msg_S is 'CORRUPT' or recv_pkt.msg_S is 'NAK':  # resend the packet if response is corrupt
+
                 self.network.udt_send(packet.get_byte_S())
 
-            else:
-                recv_pkt = Packet.from_byte_S(self.byte_buffer[0:length])
-                if recv_pkt.msg_S is 'NAK':  # resend the packet if response is NAK
-                    print('RESPONSE: NAK')
-                    self.network.udt_send(packet.get_byte_S())
-
-                elif recv_pkt.msg_S is 'ACK':  # ACK confirmed; packet successfully sent
-                    print('RESPONSE: ACK')
-                    pass
-
             self.byte_buffer = self.byte_buffer[length:]
+            sleep(20)
             # loop will stop after ACK is confirmed
 
     def rdt_2_1_receive(self):
         # prepare to receive and store a packet
+        self.seq_num = 0 if (self.seq_num == 1) else 1
         ret_S = None
         byte_S = self.network.udt_receive()
         self.byte_buffer += byte_S
@@ -141,21 +136,20 @@ class RDT:
             if len(self.byte_buffer) < length:
                 return  ret_S
 
+            recv_pkt = Packet.from_byte_S(self.byte_buffer[0:length])
+
             # determine whether the packet is corrupted
-            if Packet.corrupt(byte_S):  # the packet is corrupt
-                print('CORRUPT PACKET')
+            if recv_pkt.msg_S is 'CORRUPT':  # the packet is corrupt
                 response = Packet(self.seq_num, 'NAK')
                 self.network.udt_send(response.get_byte_S())
 
             else:  # the packet is not corrupt
-                print('PACKET RECEIVED')
-                recv_pkt = Packet.from_byte_S(self.byte_buffer[0:length])
                 if self.seq_num != recv_pkt.seq_num:  # given packet has already been received
-                    print('    PACKET DUPLICATE')
-                    self.seq_num = recv_pkt.seq_num
                     response = Packet(self.seq_num, 'ACK')
                     self.network.udt_send(response.get_byte_S())
-                    ret_S = p.msg_S if (ret_S is None) else ret_S + recv_pkt.msg_S
+                    if (recv_pkt.msg_S is not 'ACK') and (recv_pkt.msg_S is not 'NAK'):
+                        print('adding ' + recv_pkt.msg_S)
+                        ret_S = recv_pkt.msg_S if (ret_S is None) else ret_S + recv_pkt.msg_S
 
                 elif self.seq_num == recv_pkt.seq_num:  # successful reception of new packet
                     response = Packet(self.seq_num, 'ACK')

@@ -121,7 +121,7 @@ if __name__ == '__main__':
     network = NetworkLayer(args.role, args.server, args.port)
     if args.role == 'client':
         network.udt_send('MSG_FROM_CLIENT')
-        sleep(10000)
+        sleep(6)
         print(network.udt_receive())
         network.disconnect()
         
