@@ -110,6 +110,7 @@ class RDT:
                 print('SEND FAILURE')
                 p = Packet(self.seq_num, msg_S)
                 self.network.udt_send(p.get_byte_S())
+                self.lastMessageSent = msg_S
 
             self.byte_buffer = self.byte_buffer[length:]  # remove the packet bytes from the buffer
             # if this was the last packet, will return on the next iteration
@@ -139,23 +140,33 @@ class RDT:
                 self.network.udt_send(response.get_byte_S())
             else:
                 print("PACKET ACK")
-                #stores last message received before sending ACK
-                if(p.msg_S == "ACK"):
+                # stores last message received before sending ACK
+                if (p.msg_S == "ACK"):
                     pass
-                elif(p.msg_S == "NAK"):
+                elif (p.msg_S == "NAK"):
                     pass
                 else:
                     self.lastMessageSent = p.msg_S
+                print("Last Message: " + self.lastMessageSent)
 
                 if self.seq_num != p.seq_num:
                     self.seq_num = p.seq_num
                     response = Packet(self.seq_num, 'ACK')
+                    #print("Why ack?")
                     self.network.udt_send(response.get_byte_S())
-                    #Applied bandaid here
+                    #Apply bandaid here
+                    #ret_S = p.msg_S if (ret_S is None) else ret_S + p.msg_S
                     ret_S = self.lastMessageSent
+                    #print("return string !!" + ret_S)
                 elif self.seq_num == p.seq_num:
+                    #print("Are equal, send ack?")
                     seq_num = 0 if (self.seq_num is None) else self.seq_num
-                    # Applied bandaid here
+                    response = Packet(seq_num, 'ACK')
+                    # Apply bandaid here
+                    if(response.msg_S == 'ACK'):
+                        self.network.udt_send(response.get_byte_S())
+                    else:
+                        self.network.udt_send(response.get_byte_S())
                     ret_S = self.lastMessageSent
 
             self.byte_buffer = self.byte_buffer[length:]  # remove the packet bytes from the buffer
