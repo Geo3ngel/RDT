@@ -1,6 +1,7 @@
 import Network_3_0
 import argparse
 from time import sleep
+import time
 import hashlib
 
 
@@ -94,16 +95,28 @@ class RDT:
         # create a packet, then send it to a receiver
         send_pkt = Packet(self.seq_num, msg_S)
         self.seq_num += 1
+        breakFlag = False
 
         # continue extracting packets until an ACK is confirmed
         while True:
+            #Sets time variable
+            startTime = time.time()
+
             self.network.udt_send(send_pkt.get_byte_S())
             self.byte_buffer = ''
             byte_S = ''
 
-            while byte_S == '':
+            while (byte_S == ''):
                 byte_S = self.network.udt_receive()
+                if(time.time()-startTime > 2):
+                    print("Sender Timed Out")
+                    breakFlag = True
+                    break
             self.byte_buffer = byte_S
+
+            if(breakFlag):
+                breakFlag = False
+                continue
 
             length = int(self.byte_buffer[:Packet.length_S_length])
             if Packet.corrupt(self.byte_buffer[:length]):
@@ -164,13 +177,6 @@ class RDT:
             self.byte_buffer = self.byte_buffer[length:]
             # loop will return after the last packet has been received
         return ret_S
-
-    def rdt_3_0_send(self, msg_S):
-        pass
-
-    def rdt_3_0_receive(self):
-        pass
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='RDT implementation.')
