@@ -95,10 +95,10 @@ class RDT:
         # create a packet, then send it to a receiver
         send_pkt = Packet(self.seq_num, msg_S)
         self.seq_num += 1
-        breakFlag = False
 
         # continue extracting packets until an ACK is confirmed
         while True:
+            breakFlag = False
             #Sets time variable
             startTime = time.time()
 
@@ -108,14 +108,14 @@ class RDT:
 
             while (byte_S == ''):
                 byte_S = self.network.udt_receive()
-                if(time.time()-startTime > 2):
+                if(time.time()-startTime > .1):
                     print("Sender Timed Out")
                     breakFlag = True
                     break
             self.byte_buffer = byte_S
 
             if(breakFlag):
-                breakFlag = False
+                print("Should resent")
                 continue
 
             length = int(self.byte_buffer[:Packet.length_S_length])
